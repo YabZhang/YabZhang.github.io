@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://yabzhang.github.io/"/>
-  <updated>2018-08-05T16:46:21.742Z</updated>
+  <updated>2018-08-08T16:39:33.353Z</updated>
   <id>https://yabzhang.github.io/</id>
   
   <author>
@@ -14,6 +14,32 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>celery 笔记</title>
+    <link href="https://yabzhang.github.io/2018/08/09/celery-%E7%AC%94%E8%AE%B0/"/>
+    <id>https://yabzhang.github.io/2018/08/09/celery-笔记/</id>
+    <published>2018-08-08T16:28:30.000Z</published>
+    <updated>2018-08-08T16:39:33.353Z</updated>
+    
+    <content type="html"><![CDATA[<p>项目中用到了<code>celery</code>，最近踩了一些坑。花点时间整理下有关<code>celery</code>的知识。</p>
+<a id="more"></a>
+<h3 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h3><blockquote><p>Celery is an asynchrounous task queue based on distributed message passing.</p>
+</blockquote>
+<p>简单来说，<code>celery</code> 是一个任务队列，支持任务的异步执行，并且也可以部署多个分布式的工作节点来提高任务的执行效率。</p>
+<p><code>celery</code> 有很多的使用场景，但共同点可以简单概括为，就是把一些比较消耗资源的任务分发到其他的任务节点去执行，以提高整个系统的工作效率。例如这样的场景：某web服务，用户的一个请求触发了一个邮件发送。这个时候我们可以吧这个耗时的邮件任务添加到 <code>celery</code> 的任务队列中去执行；而用户的响应就可以很快滴返回，而不用去等待邮件发送的结束。而且，我们也可以很方便地查看 <code>celery</code> 中的任务的执行进度和结果。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;项目中用到了&lt;code&gt;celery&lt;/code&gt;，最近踩了一些坑。花点时间整理下有关&lt;code&gt;celery&lt;/code&gt;的知识。&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="-- python -- celery" scheme="https://yabzhang.github.io/tags/python-celery/"/>
+    
+  </entry>
   
   <entry>
     <title>mac系统中vim-taglist的配置</title>
