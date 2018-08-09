@@ -2,9 +2,16 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://yabzhang.github.io/2018/08/09/celery-%E7%AC%94%E8%AE%B0/</loc>
+    <loc>https://yabzhang.github.io/2018/08/10/celery-%E7%AC%94%E8%AE%B0-2/</loc>
     
-    <lastmod>2018-08-08T16:39:33.353Z</lastmod>
+    <lastmod>2018-08-09T17:42:06.928Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://yabzhang.github.io/2018/08/10/celery-%E7%AC%94%E8%AE%B0-1/</loc>
+    
+    <lastmod>2018-08-09T16:17:10.419Z</lastmod>
     
   </url>
   
@@ -30,14 +37,14 @@
   </url>
   
   <url>
-    <loc>https://yabzhang.github.io/2018/06/17/pidfile%E7%9A%84%E7%94%A8%E9%80%94/</loc>
+    <loc>https://yabzhang.github.io/2017/07/23/hello-world/</loc>
     
     <lastmod>2018-08-02T17:38:33.846Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://yabzhang.github.io/2017/07/23/hello-world/</loc>
+    <loc>https://yabzhang.github.io/2018/06/17/pidfile%E7%9A%84%E7%94%A8%E9%80%94/</loc>
     
     <lastmod>2018-08-02T17:38:33.846Z</lastmod>
     
