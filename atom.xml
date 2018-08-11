@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://yabzhang.github.io/"/>
-  <updated>2018-08-11T21:12:34.808Z</updated>
+  <updated>2018-08-11T21:15:40.485Z</updated>
   <id>https://yabzhang.github.io/</id>
   
   <author>
@@ -20,9 +20,9 @@
     <link href="https://yabzhang.github.io/2018/08/11/celery-%E7%AC%94%E8%AE%B0-3/"/>
     <id>https://yabzhang.github.io/2018/08/11/celery-笔记-3/</id>
     <published>2018-08-11T12:27:59.000Z</published>
-    <updated>2018-08-11T21:12:34.808Z</updated>
+    <updated>2018-08-11T21:15:40.485Z</updated>
     
-    <content type="html"><![CDATA[<p>项目中用到了<code>celery</code>，最近踩了一些坑。花点时间整理下有关<code>celery</code>的知识。本文是<code>celery</code>笔记的第三篇，主要记录下<code>celery</code>的最佳实践。<br><a id="more"></a></p>
+    <content type="html"><![CDATA[<p>项目中用到了<code>celery</code>，最近踩了一些坑。花点时间整理下有关<code>celery</code>的知识。<br>本文是<code>celery</code>笔记的第三篇，主要记录下<code>celery</code>的最佳实践。<br><a id="more"></a></p>
 <h3 id="最佳实践"><a href="#最佳实践" class="headerlink" title="最佳实践"></a>最佳实践</h3><p>最佳实践主要源自一份网络博文, <a href="https://denibertovic.com/posts/celery-best-practices/" target="_blank" rel="noopener">传送门</a>。中文翻译版，辅助理解，<a href="http://www.cnblogs.com/ajianbeyourself/p/3889017.html#_label4" target="_blank" rel="noopener">传送门</a>。</p>
 <ul>
 <li>不要使用数据库作为</li>
@@ -73,7 +73,7 @@
     
     <summary type="html">
     
-      &lt;p&gt;项目中用到了&lt;code&gt;celery&lt;/code&gt;，最近踩了一些坑。花点时间整理下有关&lt;code&gt;celery&lt;/code&gt;的知识。本文是&lt;code&gt;celery&lt;/code&gt;笔记的第三篇，主要记录下&lt;code&gt;celery&lt;/code&gt;的最佳实践。&lt;br&gt;
+      &lt;p&gt;项目中用到了&lt;code&gt;celery&lt;/code&gt;，最近踩了一些坑。花点时间整理下有关&lt;code&gt;celery&lt;/code&gt;的知识。&lt;br&gt;本文是&lt;code&gt;celery&lt;/code&gt;笔记的第三篇，主要记录下&lt;code&gt;celery&lt;/code&gt;的最佳实践。&lt;br&gt;
     
     </summary>
     
