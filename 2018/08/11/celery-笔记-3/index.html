@@ -1,1 +1,48 @@
-<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> celery 笔记(3) · Yab Zhang's Blog</title><meta name="description" content="celery 笔记(3) - Yab Zhang"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="https://yabzhang.github.io/atom.xml" title="Yab Zhang's Blog"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png" alt="logo"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="https://github.com/yabzhang" target="_blank" class="nav-list-link">GITHUB</a></li><li class="nav-list-item"><a href="/atom.xml" target="_self" class="nav-list-link">RSS</a></li></ul></header><main class="container"><div class="post"><article class="post-block"><h1 class="post-title">celery 笔记(3)</h1><div class="post-info">Aug 11, 2018</div><div class="post-content"></div></article></div></main><footer><div class="paginator"><a href="/2018/08/10/celery-笔记-2/" class="next">NEXT</a></div><div class="copyright"><p>© 2015 - 2018 <a href="https://yabzhang.github.io">Yab Zhang</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/pinggod/hexo-theme-apollo" target="_blank">hexo-theme-apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" integrity="sha384-crwIf/BuaWM9rM65iM+dWFldgQ1Un8jWZMuh3puxb8TOY9+linwLoI7ZHZT+aekW" crossorigin="anonymous"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-103008856-1",'auto');ga('send','pageview');</script></body></html>
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> celery 笔记(3) · Yab Zhang's Blog</title><meta name="description" content="celery 笔记(3) - Yab Zhang"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="https://yabzhang.github.io/atom.xml" title="Yab Zhang's Blog"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png" alt="logo"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="https://github.com/yabzhang" target="_blank" class="nav-list-link">GITHUB</a></li><li class="nav-list-item"><a href="/atom.xml" target="_self" class="nav-list-link">RSS</a></li></ul></header><main class="container"><div class="post"><article class="post-block"><h1 class="post-title">celery 笔记(3)</h1><div class="post-info">Aug 11, 2018</div><div class="post-content"><p>项目中用到了<code>celery</code>，最近踩了一些坑。花点时间整理下有关<code>celery</code>的知识。本文是<code>celery</code>笔记的第三篇，主要记录下<code>celery</code>的最佳实践。<br><a id="more"></a></p>
+<h3 id="最佳实践"><a href="#最佳实践" class="headerlink" title="最佳实践"></a>最佳实践</h3><p>最佳实践主要源自一份网络博文, <a href="https://denibertovic.com/posts/celery-best-practices/" target="_blank" rel="noopener">传送门</a>。中文翻译版，辅助理解，<a href="http://www.cnblogs.com/ajianbeyourself/p/3889017.html#_label4" target="_blank" rel="noopener">传送门</a>。</p>
+<ul>
+<li>不要使用数据库作为</li>
+</ul>
+<p>作者说有不少人为了方便会使用数据库作为<code>broker</code>使用。但这样容易出问题，在性能上会有瓶颈，不利于拓展；也有可能影响到其他服务。例如：较多的工作节点可能会耗尽数据库连接；</p>
+<ul>
+<li>使用多个任务队列</li>
+</ul>
+<p>未指明队列的任务会使用默认的任务队列(可配置，不配置时默认是<code>celery</code>)。不同类型的任务最好分不同的任务队列，如：订单相关的任务和邮件发送，明显优先级不同，要分开处理。</p>
+<ul>
+<li>使用优先级<code>worker</code></li>
+</ul>
+<p>这条作者认为，为任务较多的队列部署更多的worker节点，使得量大的任务可以得到有效的处理。参见上一篇文章部署不同队列worker的方案。</p>
+<p>此外，<code>celery</code>支持为同意队列的任务配置不同优先级, 高优先级的任务能先被处理。<code>celery</code>还支持定义优先级队列，场景是在某worker绑定多个任务队列时，优先处理较高优先级队列的任务，但只有少量<code>broker</code>支持，如rabbitmq，redis不支持。</p>
+<ul>
+<li>使用<code>celery</code>的错误处理机制</li>
+</ul>
+<p>建议使用<code>celery</code>的错误处理机制来处理失败等情况，例如：任务重试。</p>
+<ul>
+<li>使用<code>Flower</code></li>
+</ul>
+<p><code>Flower</code>是一个<code>celery</code>任务监控工具，可以方便地看到<code>broker</code>和<code>worker</code>的任务进度和实际的执行情况。</p>
+<ul>
+<li>忽略任务的结果，除非你真的需要</li>
+</ul>
+<p>很多的任务并不需要返回数据。任务状态也只有做统计时才用到。除非真的需要，一般可以忽略任务结果，具体配置为<code>CELERY_IGNORE_RESULT = True</code>。</p>
+<ul>
+<li>不要在任务调用中传参数据库对象或者orm对象</li>
+</ul>
+<p>主要是针对<code>python</code>的项目实践，传参数据库对象，最后任务中拿到的有可能已经是旧的数据。更好的做法是传数据条目的id。</p>
+<h3 id="可能的问题"><a href="#可能的问题" class="headerlink" title="可能的问题"></a>可能的问题</h3><ol>
+<li>通过<code>task_id</code>获取任务结果</li>
+</ol>
+<p>每个任务都有一个唯一的<code>task_id</code>，可以由此获取任务的执行状态和执行的结果;使用<code>celery.result.AsyncResult</code>是一种较为通用的任务结果获取方式;<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> tasks <span class="keyword">import</span> app</span><br><span class="line"><span class="keyword">from</span> celery.result <span class="keyword">import</span> AsyncResult</span><br><span class="line"></span><br><span class="line">task_id = <span class="string">"a9bab539-5c7a-4b24-8b19-1aea619cb6d5"</span>  <span class="comment"># mock task_id</span></span><br><span class="line">task_result = AsyncResult(task_id, app=app)</span><br><span class="line"></span><br><span class="line">print(<span class="string">"status: "</span>, task_result.status)</span><br><span class="line">print(<span class="string">"result: "</span>, task_result.get(timeout=<span class="number">1</span>))  <span class="comment"># 1s timeout</span></span><br></pre></td></tr></table></figure></p>
+<p>上述的<code>app</code>是声明的celery实例，在这里是必须的；<br>若缺失则会因为缺失配置上下文(例如：broker等)而获取任务结果失败;</p>
+<p>更简单的获取方式，但需要明确任务的类型。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> tasks <span class="keyword">import</span> add</span><br><span class="line"></span><br><span class="line">task_id = <span class="string">"a9bab539-5c7a-4b24-8b19-1aea619cb6d5"</span>  <span class="comment"># mock task_id</span></span><br><span class="line">result = add.AsyncResult(id=<span class="string">"copied_task_id"</span>)</span><br></pre></td></tr></table></figure></p>
+<ol start="2">
+<li>合理配置任务队列和<code>worker</code>，添加任务监控</li>
+</ol>
+<p>根据可能任务量级配置足够的worker来处理任务，否则可能导致任务队列的任务堆积。最好可以添加任务的监控，例如<code>flower</code>等工具;</p>
+<ol start="3">
+<li>db session的更新问题</li>
+</ol>
+<p>这是我在<code>flask</code>项目中遇到的一个问题。任务中的db session异常，如：任务中的session无法查到新插入的数据；应该是和数据库的隔离级别有关。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@task_postrun.connect</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">close_session</span><span class="params">(*args, **kwargs)</span>:</span></span><br><span class="line">    <span class="comment"># this ensures tasks have a fresh session (e.g. session errors won't propagate across tasks)</span></span><br><span class="line">    db.session.remove()</span><br></pre></td></tr></table></figure>
+<h3 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h3><p>本文罗列了一些<code>celery</code>最佳实践, 并对可能会出的问题给出了解答。基本总结下来就是采用推荐配置，保持任务简单，区分不同的任务队列，添加监控;</p>
+</div></article></div></main><footer><div class="paginator"><a href="/2018/08/10/celery-笔记-2/" class="next">NEXT</a></div><div class="copyright"><p>© 2015 - 2018 <a href="https://yabzhang.github.io">Yab Zhang</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/pinggod/hexo-theme-apollo" target="_blank">hexo-theme-apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" integrity="sha384-crwIf/BuaWM9rM65iM+dWFldgQ1Un8jWZMuh3puxb8TOY9+linwLoI7ZHZT+aekW" crossorigin="anonymous"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-103008856-1",'auto');ga('send','pageview');</script></body></html>
