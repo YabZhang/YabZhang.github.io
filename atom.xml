@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://yabzhang.github.io/"/>
-  <updated>2018-08-09T17:42:06.928Z</updated>
+  <updated>2018-08-11T12:27:59.919Z</updated>
   <id>https://yabzhang.github.io/</id>
   
   <author>
@@ -14,6 +14,20 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>celery 笔记(3)</title>
+    <link href="https://yabzhang.github.io/2018/08/11/celery-%E7%AC%94%E8%AE%B0-3/"/>
+    <id>https://yabzhang.github.io/2018/08/11/celery-笔记-3/</id>
+    <published>2018-08-11T12:27:59.000Z</published>
+    <updated>2018-08-11T12:27:59.919Z</updated>
+    
+    <summary type="html">
+    
+    </summary>
+    
+    
+  </entry>
   
   <entry>
     <title>celery 笔记(2)</title>
