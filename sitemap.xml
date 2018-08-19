@@ -2,9 +2,16 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://yabzhang.github.io/2018/08/20/revert%E4%B8%80%E4%B8%AAmerge%E6%8F%90%E4%BA%A4/</loc>
+    
+    <lastmod>2018-08-19T17:00:38.939Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://yabzhang.github.io/2018/08/11/celery-%E7%AC%94%E8%AE%B0-3/</loc>
     
-    <lastmod>2018-08-11T21:15:40.485Z</lastmod>
+    <lastmod>2018-08-12T07:01:43.020Z</lastmod>
     
   </url>
   
@@ -44,14 +51,14 @@
   </url>
   
   <url>
-    <loc>https://yabzhang.github.io/2017/07/23/hello-world/</loc>
+    <loc>https://yabzhang.github.io/2018/06/17/pidfile%E7%9A%84%E7%94%A8%E9%80%94/</loc>
     
     <lastmod>2018-08-02T17:38:33.846Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://yabzhang.github.io/2018/06/17/pidfile%E7%9A%84%E7%94%A8%E9%80%94/</loc>
+    <loc>https://yabzhang.github.io/2017/07/23/hexo%E6%A0%87%E7%AD%BE%E4%BD%93%E9%AA%8C/</loc>
     
     <lastmod>2018-08-02T17:38:33.846Z</lastmod>
     
@@ -65,7 +72,7 @@
   </url>
   
   <url>
-    <loc>https://yabzhang.github.io/2017/07/23/hexo%E6%A0%87%E7%AD%BE%E4%BD%93%E9%AA%8C/</loc>
+    <loc>https://yabzhang.github.io/2017/07/23/hello-world/</loc>
     
     <lastmod>2018-08-02T17:38:33.846Z</lastmod>
     

@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://yabzhang.github.io/"/>
-  <updated>2018-08-11T21:15:40.485Z</updated>
+  <updated>2018-08-19T17:00:38.939Z</updated>
   <id>https://yabzhang.github.io/</id>
   
   <author>
@@ -16,11 +16,59 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>revert一个merge提交</title>
+    <link href="https://yabzhang.github.io/2018/08/20/revert%E4%B8%80%E4%B8%AAmerge%E6%8F%90%E4%BA%A4/"/>
+    <id>https://yabzhang.github.io/2018/08/20/revert一个merge提交/</id>
+    <published>2018-08-19T16:27:48.000Z</published>
+    <updated>2018-08-19T17:00:38.939Z</updated>
+    
+    <content type="html"><![CDATA[<p><code>git</code>是最常用的代码版本管理工具，撤销已经提交的代码的操作包括：<code>git checkout</code>、<code>git reset</code>、<code>git revert</code>。我再使用<code>revert</code>撤销一个合并后，遇到了一些特别的情况。</p>
+<a id="more"></a>
+<h3 id="区别"><a href="#区别" class="headerlink" title="区别"></a>区别</h3><ol>
+<li><p><code>git checkout</code> 主要用于本地代码库的分支切换，和调到指定的提交快照。但并不改变分支的记录和<code>HEAD</code>的位置。</p>
+</li>
+<li><p><code>git reset</code> 主要用于本地代码的撤销操作，是可以改变提交历史的和<code>HEAD</code>指针位置的。例如：<code>git reset &lt;commit-hash&gt;</code>，将会把当前分支到指定的提交前全部撤销，并改变分支<code>HEAD</code>指针的位置。这个命令可能具有破坏性，请谨慎使用。对于丢失的提交记录可以尝试使用<code>git reflog</code>来找回。</p>
+</li>
+<li><p><code>git revert</code>的效果是增加一个提交(<code>HEAD</code> 自然前移一个位置)，<code>抵消</code>掉要回退的代码提交，但不改变已有的提交历史，注意这个命令与<code>git reset</code>的区别。</p>
+</li>
+</ol>
+<h3 id="revert一个合并提交"><a href="#revert一个合并提交" class="headerlink" title="revert一个合并提交"></a><code>revert</code>一个合并提交</h3><p><code>git checkout</code>和<code>git reset</code>的使用请参考手册和各种资料。这里记录下我再使用<code>revert</code>时遇到的一个特别情况。</p>
+<p><code>git revert &lt;commit-hash&gt;</code>的效果是新增一个提交，用于抵消掉某个历史提交。具体的逻辑就是在这个提交里添加历史提交相反的代码改动来回退代码，但不会改变已有的历史。</p>
+<p>一个特别的情况: 有一个功能分支<code>feature-a</code>在合并到<code>master</code>后，发现新功能有隐藏的bug。<br>所以在<code>master</code>上使用<code>git revert</code>来回退这个合并，并在<code>feature-a</code>上尽心修复。<br>待修复胡再尝试将<code>feature-a</code>合并到<code>master</code>会因为<code>revert</code>而无法改变当前代码。</p>
+<p>原因就是<code>revert</code>并没有改变历史，所以在<code>master</code>历史上是有新功能的提交的（但已经被回退了），所以简单的再次合并不能生效。</p>
+<p>在网络上找到了<code>linus</code>回答的解决方案：</p>
+<ol>
+<li><p>在<code>master</code>上再进行一次<code>revert</code>操作，用于回退第一次的<code>revert</code>那个提交。然后再合并修复后的<code>feature-a</code>到<code>master</code>；</p>
+</li>
+<li><p>因为使用<code>revert</code>是保留历史的，所以需要重新构造已有的历史提交，尝试再次合并。简单来说就是把被撤销的代码放在新的提交中再合并;具体的做法很多，比如可以在修复前，从原有的<code>feature-a</code>重新生成新分支（<code>git rebase --no-ff</code>，会创建新的历史，提交的hash会改变），做修复操作后再合并会<code>master</code>就不会有问题。</p>
+</li>
+</ol>
+<p>在文章中，linus给出的建议是优先方法2。因为方法1的做法不是正规的工作流方法(理解可能有偏差，文后有链接，请自行查看)。</p>
+<h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><ol>
+<li><a href="https://git-scm.com/docs/git-cherry-pick" target="_blank" rel="noopener">https://git-scm.com/docs/git-cherry-pick</a> Git资源</li>
+<li><a href="https://www.atlassian.com/git/tutorials/learn-git-with-bitbucket-cloud" target="_blank" rel="noopener">https://www.atlassian.com/git/tutorials/learn-git-with-bitbucket-cloud</a> Git资源</li>
+<li><a href="https://opensource.apple.com/source/Git/Git-26/src/git-htmldocs/howto/revert-a-faulty-merge.txt" target="_blank" rel="noopener">https://opensource.apple.com/source/Git/Git-26/src/git-htmldocs/howto/revert-a-faulty-merge.txt</a> linus的回答</li>
+<li><a href="https://mijingo.com/blog/reverting-a-git-merge" target="_blank" rel="noopener">https://mijingo.com/blog/reverting-a-git-merge</a> revert一个合并提交</li>
+</ol>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;code&gt;git&lt;/code&gt;是最常用的代码版本管理工具，撤销已经提交的代码的操作包括：&lt;code&gt;git checkout&lt;/code&gt;、&lt;code&gt;git reset&lt;/code&gt;、&lt;code&gt;git revert&lt;/code&gt;。我再使用&lt;code&gt;revert&lt;/code&gt;撤销一个合并后，遇到了一些特别的情况。&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="-- git" scheme="https://yabzhang.github.io/tags/git/"/>
+    
+  </entry>
+  
+  <entry>
     <title>celery 笔记(3)</title>
     <link href="https://yabzhang.github.io/2018/08/11/celery-%E7%AC%94%E8%AE%B0-3/"/>
     <id>https://yabzhang.github.io/2018/08/11/celery-笔记-3/</id>
     <published>2018-08-11T12:27:59.000Z</published>
-    <updated>2018-08-11T21:15:40.485Z</updated>
+    <updated>2018-08-12T07:01:43.020Z</updated>
     
     <content type="html"><![CDATA[<p>项目中用到了<code>celery</code>，最近踩了一些坑。花点时间整理下有关<code>celery</code>的知识。<br>本文是<code>celery</code>笔记的第三篇，主要记录下<code>celery</code>的最佳实践。<br><a id="more"></a></p>
 <h3 id="最佳实践"><a href="#最佳实践" class="headerlink" title="最佳实践"></a>最佳实践</h3><p>最佳实践主要源自一份网络博文, <a href="https://denibertovic.com/posts/celery-best-practices/" target="_blank" rel="noopener">传送门</a>。中文翻译版，辅助理解，<a href="http://www.cnblogs.com/ajianbeyourself/p/3889017.html#_label4" target="_blank" rel="noopener">传送门</a>。</p>
@@ -52,7 +100,7 @@
 <ul>
 <li>不要在任务调用中传参数据库对象或者orm对象</li>
 </ul>
-<p>主要是针对<code>python</code>的项目实践，传参数据库对象，最后任务中拿到的有可能已经是旧的数据。更好的做法是传数据条目的id。</p>
+<p>主要是针对<code>python</code>的项目实践，传参数据库对象，最后任务中拿到的有可能已经是旧的数据。更好的做法是传数据条目的id。我认为是最好只把<code>python</code>的基本类型作为参数。</p>
 <h3 id="可能的问题"><a href="#可能的问题" class="headerlink" title="可能的问题"></a>可能的问题</h3><ol>
 <li>通过<code>task_id</code>获取任务结果</li>
 </ol>
@@ -68,7 +116,7 @@
 </ol>
 <p>这是我在<code>flask</code>项目中遇到的一个问题。任务中的db session异常，如：任务中的session无法查到新插入的数据；应该是和数据库的隔离级别有关。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@task_postrun.connect</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">close_session</span><span class="params">(*args, **kwargs)</span>:</span></span><br><span class="line">    <span class="comment"># this ensures tasks have a fresh session (e.g. session errors won't propagate across tasks)</span></span><br><span class="line">    db.session.remove()</span><br></pre></td></tr></table></figure>
-<h3 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h3><p>本文罗列了一些<code>celery</code>最佳实践, 并对可能会出的问题给出了解答。基本总结下来就是采用推荐配置，保持任务简单，区分不同的任务队列，添加监控;</p>
+<h3 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h3><p>本文罗列了一些<code>celery</code>最佳实践, 并对可能会出的问题给出了解答。基本总结下来就是采用推荐配置，保持任务简单，区分不同的任务队列，添加监控。</p>
 ]]></content>
     
     <summary type="html">
