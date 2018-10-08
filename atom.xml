@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://yabzhang.github.io/"/>
-  <updated>2018-08-19T17:00:38.939Z</updated>
+  <updated>2018-10-08T16:18:32.765Z</updated>
   <id>https://yabzhang.github.io/</id>
   
   <author>
@@ -14,6 +14,43 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>celery延时任务踩坑</title>
+    <link href="https://yabzhang.github.io/2018/10/08/celery%E5%BB%B6%E6%97%B6%E4%BB%BB%E5%8A%A1%E8%B8%A9%E5%9D%91/"/>
+    <id>https://yabzhang.github.io/2018/10/08/celery延时任务踩坑/</id>
+    <published>2018-10-08T15:19:46.000Z</published>
+    <updated>2018-10-08T16:18:32.765Z</updated>
+    
+    <content type="html"><![CDATA[<p><code>celery</code>的延时任务参数<code>countdown</code>或者<code>eta</code> 清晰易懂，使用起来也很方便；但最近遇到一个坑。</p>
+<a id="more"></a>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 120s 后执行任务</span></span><br><span class="line">task.apply_async(args, countdown=<span class="number">120</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 120s 后执行任务</span></span><br><span class="line">task_dt = datetime.datetime.now() + datetime.timedelta(seconds=<span class="number">120</span>)</span><br><span class="line">task.apply_async(args, eta=task_dt)</span><br></pre></td></tr></table></figure>
+<p><code>celery</code>的延时任务调用真的很简单。</p>
+<p>延时8小时后执行是项目的一个功能，但是实际到预定时间后任务被重复执行;<br>其中最主要的原因是测试不完全；但具体的原因还是技术在使用celery延时任务这里踩了坑,其实官方文档里已经有提过;</p>
+<p>celery官方文档中有提到使用redis作为broker时，需要注意的问题；</p>
+<blockquote><p><strong>Visibility timeout</strong></p>
+<p><em>If a task isn’t acknowledged within the Visibility Timeout the task will be redelivered to another worker and executed.</em><br>如果一个任务没有在<code>visibility timeout</code>时间内被确认，就会被重新分发到另一个<code>worker</code>去执行.</p>
+<p><em>This causes problems with ETA/countdown/retry tasks where the time to execute exceeds the visibility timeout; in fact if that happens it will be executed again, and again in a loop.</em><br>这会让采用了<code>etc/countdown/retry</code>这些特性并且超时没有确认的任务出问题，具体就是任务被重复地执行。</p>
+<p><em>So you have to increase the visibility timeout to match the time of the longest ETA you’re planning to use.</em><br>所以，你必须增加<code>visibility timeout</code>的配置值来覆盖你打算使用的最长<code>eta</code>延时时间。</p>
+<p><em>Note that Celery will redeliver messages at worker shutdown, so having a long visibility timeout will only delay the redelivery of ‘lost’ tasks in the event of a power failure or forcefully terminated workers.</em><br>需要注意的是，<code>celery</code>会在<code>worker</code>关闭的时候重新分发任务，所以配置一个较长的<code>visibility timeout</code>值只会让那些“丢失”的任务延迟执行，就比如在服务器停电或者<code>worker</code>被暴力中止时导致的任务丢失。</p>
+<p>Periodic tasks won’t be affected by the visibility timeout, as this is a concept separate from ETA/countdown.<br>周期性任务不受这个配置影响，因为周期任务的原理不同于<code>eta/countdown</code>这样的延时任务。</p>
+<p>You can increase this timeout by configuring a transport option with the same name:<br>你可以这样配置这个值：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">app.conf.broker_transport_options = &#123;<span class="string">‘visibility_timeout’</span>: <span class="number">43200</span>&#125;  <span class="comment"># 12h</span></span><br></pre></td></tr></table></figure>
+
+<p>The value must be an int describing the number of seconds.<br>配置值必须是整数，表示总的秒数;</p>
+</blockquote>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;code&gt;celery&lt;/code&gt;的延时任务参数&lt;code&gt;countdown&lt;/code&gt;或者&lt;code&gt;eta&lt;/code&gt; 清晰易懂，使用起来也很方便；但最近遇到一个坑。&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="-- celery" scheme="https://yabzhang.github.io/tags/celery/"/>
+    
+  </entry>
   
   <entry>
     <title>revert一个merge提交</title>
