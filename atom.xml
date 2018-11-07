@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://yabzhang.github.io/"/>
-  <updated>2018-11-06T13:20:24.686Z</updated>
+  <updated>2018-11-07T15:39:06.150Z</updated>
   <id>https://yabzhang.github.io/</id>
   
   <author>
@@ -14,6 +14,38 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>服务器测试工具 —— ab</title>
+    <link href="https://yabzhang.github.io/2018/11/07/%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7-%E2%80%94%E2%80%94-ab/"/>
+    <id>https://yabzhang.github.io/2018/11/07/服务器测试工具-——-ab/</id>
+    <published>2018-11-07T15:04:58.000Z</published>
+    <updated>2018-11-07T15:39:06.150Z</updated>
+    
+    <content type="html"><![CDATA[<p><code>ab</code>是Apache旗下一款知名的服务器测试工具，最适合用于测试服务器的并发性能。</p>
+<p><code>ab</code>的使用相当简单，下面来看下最基本的使用吧。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">&gt; ab -n 10 www.ishuhui.com/</span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">Benchmarking www.ishuhui.com (be patient).....<span class="keyword">done</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Server Software:        Tengine</span><br><span class="line">Server Hostname:        www.ishuhui.com</span><br><span class="line">Server Port:            80</span><br><span class="line"></span><br><span class="line">Document Path:          /</span><br><span class="line">Document Length:        278 bytes</span><br><span class="line"></span><br><span class="line">Concurrency Level:      1</span><br><span class="line">Time taken <span class="keyword">for</span> tests:   0.324 seconds</span><br><span class="line">Complete requests:      10</span><br><span class="line">Failed requests:        0</span><br><span class="line">Non-2xx responses:      10</span><br><span class="line">Total transferred:      5521 bytes</span><br><span class="line">HTML transferred:       2780 bytes</span><br><span class="line">Requests per second:    30.85 [<span class="comment">#/sec] (mean)</span></span><br><span class="line">Time per request:       32.412 [ms] (mean)</span><br><span class="line">Time per request:       32.412 [ms] (mean, across all concurrent requests)</span><br><span class="line">Transfer rate:          16.63 [Kbytes/sec] received</span><br><span class="line"></span><br><span class="line">Connection Times (ms)</span><br><span class="line">              min  mean[+/-sd] median   max</span><br><span class="line">Connect:       12   15   2.9     14      20</span><br><span class="line">Processing:    11   17   8.5     16      40</span><br><span class="line">Waiting:       11   17   8.5     15      40</span><br><span class="line">Total:         23   32  10.2     30      59</span><br><span class="line"></span><br><span class="line">Percentage of the requests served within a certain time (ms)</span><br><span class="line">  50%     30</span><br><span class="line">  66%     32</span><br><span class="line">  75%     34</span><br><span class="line">  80%     36</span><br><span class="line">  90%     59</span><br><span class="line">  95%     59</span><br><span class="line">  98%     59</span><br><span class="line">  99%     59</span><br><span class="line"> 100%     59 (longest request)</span><br></pre></td></tr></table></figure>
+<p><code>ab -n 10 www.ishuhui.com/</code> 这条命令向<code>ishuhui</code>(知名汉化组，安利一波~)连续发10个请求；<br>并根据响应生成结果报表；从报表中，我们可以看到<code>ishuhui</code>服务器的信息，以及我们的10个请求的响应数据统计；</p>
+<p><code>Concurrency Level</code> 这里指并发量，这里为1, 就是只有一个并发；</p>
+<p>整个测试耗时<code>0.324</code>秒，所有的请求均成功；平均每个请求时间在<code>30.412</code>毫秒；</p>
+<p><code>Connection Times</code>部分统计了所有请求的从建立连接，到等待响应以及收到响应的时间分布；</p>
+<p>最后的部分对所有的响应返回时间，按百分比列出来；<br>从中我们可以很清楚地看出，80%以上的请求在36毫秒内完成，最慢的请求耗时59毫秒。</p>
+<p><code>ab</code>支持非常丰富的参数。例如常见的有:</p>
+<p><code>-c</code> 指定并发数；未指定时默认为1;<br><code>-n</code> 指定总的请求数；<br><code>-k</code> 保持与服务器的长连接, 声明<code>Keep-Alive</code>;<br><code>-H</code> 指定请求头部；<br><code>-m</code> 指定请求方法;<br><code>-t</code> 指定持续测试的时间，未指明n时默认为50000；</p>
+<p>更多详细的说明请参见文档：<a href="https://httpd.apache.org/docs/2.4/programs/ab.html" target="_blank" rel="noopener">https://httpd.apache.org/docs/2.4/programs/ab.html</a></p>
+<p>我最常用的就是<code>ab -k -c 5 -n 100 www.example.com/</code>。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;code&gt;ab&lt;/code&gt;是Apache旗下一款知名的服务器测试工具，最适合用于测试服务器的并发性能。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;ab&lt;/code&gt;的使用相当简单，下面来看下最基本的使用吧。&lt;/p&gt;
+&lt;figure class=&quot;highlight bash&quot;&gt;&lt;tab
+    
+    </summary>
+    
+    
+  </entry>
   
   <entry>
     <title>职业生涯可以避免的10个错误</title>
