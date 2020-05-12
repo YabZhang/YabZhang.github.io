@@ -1,0 +1,49 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> redis 知识总结(2) · Yab Zhang's Blog</title><meta name="description" content="redis 知识总结(2) - Yab Zhang"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="https://yabzhang.github.io/atom.xml" title="Yab Zhang's Blog"><meta name="generator" content="Hexo 4.2.0"><link rel="alternate" href="/atom.xml" title="Yab Zhang's Blog" type="application/atom+xml">
+</head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png" alt="logo"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="https://github.com/yabzhang" target="_blank" class="nav-list-link">GITHUB</a></li><li class="nav-list-item"><a href="/atom.xml" target="_self" class="nav-list-link">RSS</a></li></ul></header><main class="container"><div class="post"><article class="post-block"><h1 class="post-title">redis 知识总结(2)</h1><div class="post-info">Nov 10, 2018</div><div class="post-content"><p>本文主要记录和介绍redis的集群相关的知识。<br>本人没有项目中的redis集群经验，这里简单记录下文档知识和实验教程链接；</p>
+<a id="more"></a>
+
+<h3 id="redis-同步-主从复制"><a href="#redis-同步-主从复制" class="headerlink" title="redis 同步/主从复制"></a>redis 同步/主从复制</h3><ul>
+<li>一个主节点可以有个从节点; redis只支持<code>主-从复制</code>，不支持<code>主-主复制</code>;</li>
+<li>redis 使用异步复制; 同步时主节点查询和写入不受影响，但可以配置同步时不停止执行写请求；从节点清除旧数据恢复为新数据会阻塞，可以配置为用旧数据回复查询讯;</li>
+<li>从节点首次连接或者失去连接后重新连接后都会开始执行同步机制；同步是原子的，无需用户停留等待;</li>
+</ul>
+<p>可以通过直接在命令行中添加<code>slaveof &lt;masterIP&gt; &lt;masterPort&gt;</code>或者在配置文件中配置两种方式配置；</p>
+<p>同步的过程:</p>
+<ol>
+<li>slave: 首次或失去连接后重连，发送<code>sync</code>命令到主节点;</li>
+<li>master: 收到<code>sync</code>后开始在后台执行快照备份生成最新的rdb文件; 在这期间，也会记录所有新的写请求到一个命令的缓冲区中；</li>
+<li>master: 后台发送rdb数据文件到从节点；</li>
+<li>slave: slave在收到rdb文件后，把数据清空恢复为最新的rdb文件数据；</li>
+<li>master: 开始持续发送缓冲区的写命令；</li>
+<li>slave: 执行后续收到的命令；</li>
+<li>salve: 开始执行接收到的请求;</li>
+</ol>
+<p>更多细节:</p>
+<p><a href="http://www.redis.cn/topics/replication.html" target="_blank" rel="noopener">http://www.redis.cn/topics/replication.html</a></p>
+<p><a href="https://blog.csdn.net/Stubborn_Cow/article/details/50442950" target="_blank" rel="noopener">https://blog.csdn.net/Stubborn_Cow/article/details/50442950</a></p>
+<h3 id="redis-集群"><a href="#redis-集群" class="headerlink" title="redis 集群"></a>redis 集群</h3><p>redis 集群是一个提供在多个Redis间节点间共享数据的程序集；而且redis 集群不支持多个keys的命令；<br>redis 集群通过分区自动分配数据到不同的节点上，并在部分节点失败或不可用时仍能继续处理命令；</p>
+<p>集群中的节点负责存储数据、记录集群状态（包括键到正确节点的映射）。集群节点同样能够自动发现其他节点，检测故障节点和推举新的主节点；<br>集群节点不能代理请求，所以客户端在收到重定向错误(moved 或 ask)时，会将命令重定向到其他节点；</p>
+<p>redis 集群只能容忍少数节点不可用；并能推举从节点成为新的主节点；<br>若没有可用的从节点是，丢失的节点数据将不可用；<br>但是对于更高的网络分块可用性来说，并不是很好的解决方案；</p>
+<ul>
+<li>数据分片</li>
+</ul>
+<p>redis 集群并没有使用<code>一致性哈希</code>,而是引入了哈希槽的概念；<br>redis 集群中一共有16384个哈希槽,每个key通过CRC16校验后对16384取模来确定所属的哈希槽;<br>所有集群中的节点分别负责一部分的哈希槽的数据；通过调整节点负责的哈希槽的数量，很方便地实现节点调整；</p>
+<p>官方推荐为每个节点做主从复制，提高可用性；</p>
+<ul>
+<li>一致性保证</li>
+</ul>
+<p>redis无法保证强一致性，因此集群在特定条件下可能丢失写操作；</p>
+<blockquote>
+<p>如果网络分区发生时间较短,那么集群将会继续正常运作,如果分区的时间足够让大部分的一方选举为新的master，那么写入旧master中的数据便丢失了.</p>
+</blockquote>
+<ul>
+<li>MOVED &amp;&amp; ASK</li>
+</ul>
+<p>集群中的某节点包含着请求涉及的哈希槽，那么就可以执行；否则将返回一个`MOVED错误;<br>并包含键对应的哈希槽，和能槽所在的节点连接信息；</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;GET x</span><br><span class="line">-MOVED 3999 127.0.0.1:xxxx</span><br></pre></td></tr></table></figure>
+
+<p>MOVED重定向的含义是目标哈希槽永久地被另一目标节点处理；但在有些时候事情并不是这么这么绝对；<br>ASK的语义就只是下一个查询发到指定的节点去执行；比如在进行节点间的哈希槽迁移时，就更适合使用ASK。</p>
+<p>集群文档和创建教程:</p>
+<p><a href="http://www.redis.cn/topics/cluster-spec.html" target="_blank" rel="noopener">http://www.redis.cn/topics/cluster-spec.html</a></p>
+<p><a href="https://medium.com/commencis/creating-redis-cluster-using-docker-67f65545796d" target="_blank" rel="noopener">https://medium.com/commencis/creating-redis-cluster-using-docker-67f65545796d</a></p>
+</div></article></div></main><footer><div class="paginator"><a href="/2018/11/09/redis-%E7%9F%A5%E8%AF%86%E6%80%BB%E7%BB%93-1/" class="next">NEXT</a></div><div class="copyright"><p>© 2015 - 2020 <a href="https://yabzhang.github.io">Yab Zhang</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/pinggod/hexo-theme-apollo" target="_blank">hexo-theme-apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" integrity="sha384-crwIf/BuaWM9rM65iM+dWFldgQ1Un8jWZMuh3puxb8TOY9+linwLoI7ZHZT+aekW" crossorigin="anonymous"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-103008856-1",'auto');ga('send','pageview');</script></body></html>
